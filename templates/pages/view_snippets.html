@@ -32,7 +32,7 @@
                 <tr>
                     <td scope="row">{{ snippet.id }}</td>
                     <td><a href="{% url 'snippet-detail' snippet.id %}">{{ snippet.name }}</a>
-                        <a href="delete/{{ snippet.id }}"><i class="fa-sharp fa-solid fa-trash"></i></a>
+                        <a href="{% url 'snippet-delete' snippet.id %}"><i class="fa-sharp fa-solid fa-trash"></i></a>
                     </td>
                     <td>{{ snippet.creation_date }}</td>
                 </tr>
