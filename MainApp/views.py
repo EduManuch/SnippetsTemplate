@@ -4,6 +4,7 @@ from MainApp.models import Snippet
 from MainApp.forms import SnippetForm, UserRegistrationForm
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 
 
 def index_page(request):
@@ -39,6 +40,8 @@ def add_snippet(request):
 
 def snippet_delete(request, snippet_id):
     snippet = Snippet.objects.get(id=snippet_id)
+    if snippet.user != request.user:
+        raise PermissionDenied
     snippet.delete()
     return redirect('snippets-list')
 
