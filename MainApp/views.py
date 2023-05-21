@@ -1,4 +1,4 @@
-from django.http import Http404
+# from django.http import Http404
 from django.shortcuts import render, redirect
 from MainApp.models import Snippet
 from MainApp.forms import SnippetForm
@@ -12,7 +12,7 @@ def index_page(request):
 def add_snippet_page(request):
     form = SnippetForm()
     context = {'form': form,
-    'pagename': 'Добавление нового сниппета'}
+               'pagename': 'Добавление нового сниппета'}
     return render(request, 'pages/add_snippet.html', context)
 
 
@@ -52,4 +52,3 @@ def snippet_detail(request, snippet_id):
         'snippet': snippet,
     }
     return render(request, 'pages/snippet_detail.html', context)
-
