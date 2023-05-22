@@ -1,7 +1,7 @@
-# from django.http import Http404
+from django.http import Http404
 from django.shortcuts import render, redirect
 from MainApp.models import Snippet
-from MainApp.forms import SnippetForm, UserRegistrationForm
+from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -49,7 +49,8 @@ def snippet_delete(request, snippet_id):
 def snippets_page(request):
     snippets = Snippet.objects.all()
     context = {'pagename': 'Просмотр сниппетов',
-               'snippets': snippets}
+               'snippets': snippets,
+               }
     return render(request, 'pages/view_snippets.html', context)
 
 
@@ -63,9 +64,11 @@ def snippets_my(request):
 
 def snippet_detail(request, snippet_id):
     snippet = Snippet.objects.get(id=snippet_id)
+    comment_form = CommentForm()
     context = {
         'pagename': 'Информация о сниппете',
         'snippet': snippet,
+        'comment_form': comment_form,
     }
     return render(request, 'pages/snippet_detail.html', context)
 
@@ -74,8 +77,6 @@ def login_page(request):
     if request.method == 'POST':
         username = request.POST.get("username")
         password = request.POST.get("password")
-        # print("username =", username)
-        # print("password =", password)
         user = auth.authenticate(request, username=username, password=password)
         if user is not None:
             auth.login(request, user)
@@ -105,3 +106,17 @@ def registration(request):
                        'pagename': 'Регистрация'}
             return render(request, 'pages/registration.html', context)
         return redirect('home')
+
+
+def comment_add(request):
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        snippet_id = request.POST.get("snippet_id")
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.author = request.user
+            snippet = Snippet.objects.get(id=snippet_id)
+            comment.snippet = snippet
+            comment.save()
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+        raise Http404
