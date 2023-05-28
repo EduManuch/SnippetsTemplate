@@ -46,10 +46,15 @@ def snippet_delete(request, snippet_id):
     return redirect('snippets-list')
 
 
+# 127.0.0.1:8000/snippets/list?sort=name
 def snippets_page(request):
     snippets = Snippet.objects.all()
+    sort = request.GET.get('sort')
+    if sort:
+        snippets = snippets.order_by(sort)
     context = {'pagename': 'Просмотр сниппетов',
                'snippets': snippets,
+               'sort': sort,
                }
     return render(request, 'pages/view_snippets.html', context)
 
